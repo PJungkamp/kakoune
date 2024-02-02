@@ -3,6 +3,7 @@
 *.pyc
 *.1-r
 .*.kak.*
+.direnv/*
 src/kak
 src/kak.debug
 src/kak.debug.san_*
