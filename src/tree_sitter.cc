@@ -2,14 +2,14 @@
 
 #ifdef KAK_TREE_SITTER
 
-#include "buffer.hh" // Buffer, DisplayBuffer
-#include "changes.hh" // Change
-#include "context.hh" // Context
-#include "coord.hh" // BufferCoord
-#include "exception.hh" // runtime_error
-#include "face.hh" // Face
-#include "face_registry.hh" // FaceSpec
-#include "file.hh" // read_file
+#include "buffer.hh"
+#include "changes.hh"
+#include "context.hh"
+#include "coord.hh"
+#include "exception.hh"
+#include "face.hh"
+#include "face_registry.hh"
+#include "file.hh"
 
 #include <dlfcn.h>
 #include <tree_sitter/api.h>
@@ -73,6 +73,7 @@ static void highlight_node(DisplayBuffer& display_buffer, TSNode const& node, Fa
         }
     }
 }
+
 struct InjectionHighlighterApplier
 {
     DisplayBuffer& display_buffer;
