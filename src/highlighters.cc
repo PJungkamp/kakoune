@@ -1158,8 +1158,12 @@ private:
             const auto& separator = is_cursor_line && last_line != current_line
                                     ? m_cursor_separator : m_separator;
 
-            line.insert(line.begin(), {buffer, atom_face});
-            line.insert(line.begin() + 1, {separator, face});
+            const Array<DisplayAtom, 2> atoms = {{
+                {buffer, atom_face},
+                {separator, atom_face}
+            }};
+
+            line.insert(line.begin(), atoms.begin(), atoms.end());
 
             last_line = current_line;
         }
