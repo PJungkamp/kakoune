@@ -310,10 +310,10 @@ The following expansions are supported (with required context _in italics_):
     history id of the current buffer, an integer value which refers to a
     specific buffer version in the undo tree (see also `%val{timestamp}`)
 
-*%val{hook_param_capture_n}*::
+*%val{hook_param_capture_N}*::
     _in `hook` command <command> parameter_ +
-    text captured by capture group _n_, if the executing hook's filter regex
-    used capture groups
+    text captured by capture group _N_, which can be either be the capturing
+    group number, or its name (see <<regex#groups,`:doc regex groups`>>)
 
 *%val{hook_param}*::
     _in `hook` command <command> parameter_ +
