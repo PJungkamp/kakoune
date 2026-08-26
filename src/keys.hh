@@ -10,6 +10,7 @@
 #include "vector.hh"
 
 #include <cstdint>
+#include <bit>
 
 namespace Kakoune
 {
@@ -22,7 +23,7 @@ struct Key
         Middle,
         Right
     };
-    enum class Modifiers : int
+    enum class Modifiers : uint32_t
     {
         None    = 0,
         Control = 1 << 0,
@@ -32,11 +33,14 @@ struct Key
         MousePress     = 1 << 3,
         MouseRelease   = 1 << 4,
         MousePos       = 1 << 5,
-        MouseButtonMask= 0b11 << 6,
+        MouseButtonMask= 0b11u << 6,
 
         Scroll     = 1 << 8,
         Resize     = 1 << 9,
         MenuSelect = 1 << 10,
+
+        VScrollMask = 0xFFu << 16,
+        HScrollMask = 0xFFu << 24,
     };
     enum NamedKey : Codepoint
     {
@@ -89,10 +93,31 @@ struct Key
     constexpr bool operator==(Key other) const { return val() == other.val(); }
     constexpr auto operator<=>(Key other) const { return val() <=> other.val(); }
 
-    constexpr DisplayCoord coord() const { return {(int)((int32_t) (key & 0xFFFF0000) >> 16), (int)(key & 0x0000FFFF)}; }
-    constexpr MouseButton mouse_button() { return MouseButton{((int)modifiers & (int)Modifiers::MouseButtonMask) >> 6}; }
-    constexpr int scroll_amount() { return (int32_t)modifiers >> 16; }
-    static Modifiers to_modifier(MouseButton button) { return Key::Modifiers{((int)button << 6) & (int)Modifiers::MouseButtonMask}; }
+    constexpr DisplayCoord coord() const { return {(int)((uint32_t) (key & 0xFFFF0000) >> 16), (int)(key & 0x0000FFFF)}; }
+
+    constexpr static Modifiers mouse_button_modifier(MouseButton button) {
+        return Key::Modifiers{((uint32_t)button << 6) & (uint32_t)Modifiers::MouseButtonMask};
+    }
+
+    constexpr MouseButton mouse_button() {
+        return (MouseButton)(((uint32_t)modifiers & (uint32_t)Modifiers::MouseButtonMask) >> 6);
+    }
+
+    constexpr static Modifiers scroll_modifier(int8_t hscroll, int8_t vscroll) {
+        auto const hscroll_modifier = (uint32_t)std::bit_cast<uint8_t>(hscroll) << 24;
+        auto const vscroll_modifier = (uint32_t)std::bit_cast<uint8_t>(vscroll) << 16;
+        return Modifiers{hscroll_modifier | vscroll_modifier | (uint32_t)Modifiers::Scroll};
+    }
+
+    constexpr int8_t hscroll_amount() {
+        uint8_t hscroll_modifier = ((uint32_t)modifiers & (uint32_t)Modifiers::HScrollMask) >> 24;
+        return std::bit_cast<int8_t>(hscroll_modifier);
+    }
+
+    constexpr int8_t vscroll_amount() {
+        uint8_t hscroll_modifier = ((uint32_t)modifiers & (uint32_t)Modifiers::VScrollMask) >> 16;
+        return std::bit_cast<int8_t>(hscroll_modifier);
+    }
 
     Optional<Codepoint> codepoint() const;
 };

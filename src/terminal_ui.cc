@@ -819,11 +819,12 @@ Optional<Key> TerminalUI::get_next_key()
                 mod |= Key::Modifiers::MouseRelease;
                 m_mouse_state &= ~mask;
             }
-            return Key{mod | Key::to_modifier(button), coord};
+            return Key{mod | Key::mouse_button_modifier(button), coord};
         };
 
         auto mouse_scroll = [this](Key::Modifiers mod, Codepoint coord, bool down) -> Key {
-            return {mod | Key::Modifiers::Scroll | (Key::Modifiers)((down ? m_wheel_scroll_amount : -1 * m_wheel_scroll_amount) << 16), coord};
+            auto vscroll = down ? m_wheel_scroll_amount : -1 * m_wheel_scroll_amount;
+            return {mod | Key::scroll_modifier(0, vscroll), coord};
         };
 
         auto masked_key = [&](Codepoint key, Codepoint shifted_key = 0) {

@@ -193,7 +193,10 @@ struct MouseHandler
         }
 
         case Key::Modifiers::Scroll:
-            scroll_window(context, key.scroll_amount(), m_dragging ? OnHiddenCursor::MoveCursor : OnHiddenCursor::PreserveSelections);
+            if (int vscroll = key.vscroll_amount())
+                scroll_window(context, vscroll, m_dragging ? OnHiddenCursor::MoveCursor : OnHiddenCursor::PreserveSelections);
+            if (int hscroll = key.hscroll_amount())
+                context.window().scroll(ColumnCount{(int)hscroll});
             return true;
 
         default: return false;

@@ -294,16 +294,16 @@ void JsonUI::eval_json(const Value& json)
         auto event = method == "mouse_press" ? Key::Modifiers::MousePress : Key::Modifiers::MouseRelease;
         auto button = str_to_button(params[0].as<String>());
 
-        m_on_key({event | Key::to_modifier(button), encode_coord({params[1].as<int>(), params[2].as<int>()})});
+        m_on_key({event | Key::mouse_button_modifier(button), encode_coord({params[1].as<int>(), params[2].as<int>()})});
     }
     else if (method == "scroll")
     {
-        if (params.size() != 3)
+        if (params.size() != 4)
             throw invalid_rpc_request("scroll needs an amount and coordinates");
-        else if (not params[0].is_a<int>() or not params[1].is_a<int>() or not params[2].is_a<int>())
+        else if (not params[0].is_a<int>() or not params[1].is_a<int>() or not params[2].is_a<int>() or not params[3].is_a<int>())
             throw invalid_rpc_request("scroll parameters are not integers");
-        m_on_key({Key::Modifiers::Scroll | (Key::Modifiers)(params[0].as<int>() << 16),
-                  encode_coord({params[1].as<int>(), params[2].as<int>()})});
+        m_on_key({Key::scroll_modifier(params[0].as<int>(), params[1].as<int>()),
+                  encode_coord({params[2].as<int>(), params[3].as<int>()})});
     }
     else if (method == "menu_select")
     {
